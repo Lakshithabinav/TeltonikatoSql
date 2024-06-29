@@ -5,13 +5,9 @@ import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.time.LocalDateTime;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import com.example.sampleSQLByTime.DAO.DataModelOut;
 import com.example.sampleSQLByTime.DAO.DataModel;
 import com.example.sampleSQLByTime.DAO.DataModelOut;
 import com.example.sampleSQLByTime.Entity.MinuteProductionOfFirstValue;
@@ -25,14 +21,13 @@ public class InputDataEncode {
     private final ObjectMapper objectMapper;
     private final ProductionService productionService;
     private final DataModelOut dataModelOut;
-    private final SimpMessagingTemplate messagingTemplate;
 
-    @Autowired
-    public InputDataEncode(ObjectMapper objectMapper, ProductionService productionService, DataModelOut dataByTime, SimpMessagingTemplate messagingTemplate) {
+   
+    public InputDataEncode(ObjectMapper objectMapper, ProductionService productionService) {
         this.objectMapper = objectMapper;
         this.productionService = productionService;
-        this.dataModelOut = dataByTime;
-        this.messagingTemplate = messagingTemplate;
+        this.dataModelOut = null;
+       
     }
 
     public void inputDataEncode(String encodedData) {
@@ -67,27 +62,27 @@ public class InputDataEncode {
                 }
 
                 System.out.println(dataModel.getName() + ": " + dataModel.getData() + ", " + dataModel.getTimestamp());
+
                 if (dataModel.getName().equals("FirstValue")) {
                     MinuteProductionOfFirstValue minuteProduction = new MinuteProductionOfFirstValue();
                     minuteProduction.setData(dataModel.getData());
-                    minuteProduction.setTimestamp(LocalDateTime.now());
+                    minuteProduction.setTimestamp(dataModel.getTimestamp());
                     productionService.saveMinuteProductionOfFirstValue(minuteProduction);
-                } else if (dataModel.getName().equals("SecondValue")) {
+                } 
+                else if (dataModel.getName().equals("SecondValue")) {
                     MinuteProductionOfSecondValue minuteProduction = new MinuteProductionOfSecondValue();
                     minuteProduction.setData(dataModel.getData());
-                    minuteProduction.setTimestamp(LocalDateTime.now());
+                    minuteProduction.setTimestamp(dataModel.getTimestamp());
                     productionService.saveMinuteProductionOfSecondValue(minuteProduction);
-                } else if (dataModel.getName().equals("ThirdValue")) {
+                }
+                 else if (dataModel.getName().equals("ThirdValue")) {
                     MinuteProductionOfThirdValue minuteProduction = new MinuteProductionOfThirdValue();
                     minuteProduction.setData(dataModel.getData());
-                    minuteProduction.setTimestamp(LocalDateTime.now());
+                    minuteProduction.setTimestamp(dataModel.getTimestamp());
                     productionService.saveMinuteProductionOfThirdValue(minuteProduction);
                 }
             }
-
-            // Fetch data by time
-            dataModelOut.fetchDataByTime(LocalDateTime.now(), dataModels[0].getData());
-
+            dataModelOut.fetchDataByTime(dataModels[0].getTimestamp());
         } catch (Exception e) {
             System.out.println("Error processing data: " + e.getMessage());
         }

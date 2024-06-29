@@ -1,10 +1,8 @@
 package com.example.sampleSQLByTime.Controller;
 
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -15,11 +13,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-
 import com.example.sampleSQLByTime.DAO.DataModelOut;
 import com.example.sampleSQLByTime.Entity.DailyProduction;
 import com.example.sampleSQLByTime.Entity.HourlyProduction;
-
 import com.example.sampleSQLByTime.Service.DataTotalService;
 import com.example.sampleSQLByTime.Service.InputDataEncode;
 
@@ -46,7 +42,7 @@ public class TeltonikaController {
 
     @GetMapping("/data")
     public ResponseEntity<DataModelOut> getMethodName() {
-        dataModelOut.fetchDataByTime(LocalDateTime.now(), 0);
+        dataModelOut.fetchDataByTime(LocalDateTime.now());
         return ResponseEntity.ok(dataModelOut);
     }
 

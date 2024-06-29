@@ -10,6 +10,6 @@ import java.util.List;
 
 @Repository
 public interface MinuteProductionOfThirdValueRepository extends JpaRepository<MinuteProductionOfThirdValue, Long> {
+    MinuteProductionOfThirdValue findTopByOrderByTimestampDesc();
     List<MinuteProductionOfThirdValue> findByTimestampBetween(LocalDateTime start, LocalDateTime end);
 }
-

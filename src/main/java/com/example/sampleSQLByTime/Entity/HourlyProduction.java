@@ -11,15 +11,19 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 public class HourlyProduction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private int firstValue;
+    private LocalDateTime timestamp;
     private int secondValue;
+    private int fstValue;
     private int thirdValue;
 
-    private LocalDateTime timestamp;
+    
+
+    // Getters and Setters
 }

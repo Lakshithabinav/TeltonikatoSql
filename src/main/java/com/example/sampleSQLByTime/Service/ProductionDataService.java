@@ -11,8 +11,11 @@ import org.springframework.stereotype.Service;
 import com.example.sampleSQLByTime.Entity.*;
 import com.example.sampleSQLByTime.Repository.*;
 
+/**
+ * Service class for managing and fetching production data.
+ */
 @Service
-public class DataTotalService {
+public class ProductionDataService {
     @Autowired
     private HourlyProductionRepository hourlyProductionRepository;
     @Autowired
@@ -24,7 +27,11 @@ public class DataTotalService {
     @Autowired
     private MinuteProductionOfThirdValueRepository thirdValueRepository;
 
-    // Method to fetch last recorded data of minutes
+    /**
+     * Method to fetch the last recorded minute production data.
+     * 
+     * @return a list of tuples containing the timestamp and data of the last recorded values.
+     */
     public List<Tuple> getLastData() {
         MinuteProductionOfFirstValue lastFirstValue = firstValueRepository.findTopByOrderByTimestampDesc();
         MinuteProductionOfSecondValue lastSecondValue = secondValueRepository.findTopByOrderByTimestampDesc();
@@ -37,42 +44,73 @@ public class DataTotalService {
         );
     }
 
-    // Method to fetch data for the current hour
-    public int getThisHourData(LocalDateTime date) {
+    /**
+     * Method to fetch the production data for the current hour.
+     * 
+     * @param date the date and time used to fetch the production data
+     * @return a list of integers representing the sum of production values for the current hour.
+     */
+    public List<Integer> getThisHourData(LocalDateTime date) {
         List<HourlyProduction> hourlyProductions = hourlyProductionRepository.findByTimestampBetween(
             date.withMinute(0).withSecond(0).withNano(0),
             date.withMinute(59).withSecond(59).withNano(999999999)
         );
-        return hourlyProductions.stream().mapToInt(HourlyProduction::getFstValue).sum()
-             + hourlyProductions.stream().mapToInt(HourlyProduction::getSecondValue).sum()
-             + hourlyProductions.stream().mapToInt(HourlyProduction::getThirdValue).sum();
+        return List.of(hourlyProductions.stream().mapToInt(HourlyProduction::getFstValue).sum(),
+                       hourlyProductions.stream().mapToInt(HourlyProduction::getSecondValue).sum(),
+                       hourlyProductions.stream().mapToInt(HourlyProduction::getThirdValue).sum());
     }
 
-    // Method to fetch data for the current day
-    public int getThisDayData(LocalDateTime date) {
+    /**
+     * Method to fetch the production data for the current day.
+     * 
+     * @param date the date used to fetch the production data
+     * @return a list of integers representing the production values for the current day.
+     */
+    public List<Integer> getThisDayData(LocalDateTime date) {
         Optional<DailyProduction> dailyProduction = dailyProductionRepository.findByDate(date.toLocalDate());
-        return dailyProduction.isPresent() ? dailyProduction.get().getFstValue()
-                + dailyProduction.get().getSecondValue()
-                + dailyProduction.get().getThirdValue() : 50;
+        return dailyProduction.isPresent() ? 
+            List.of(dailyProduction.get().getFstValue(), 
+                    dailyProduction.get().getSecondValue(), 
+                    dailyProduction.get().getThirdValue()) : 
+            null;
     }
 
-    // Method to fetch hourly production data for a specific date
+    /**
+     * Method to fetch the hourly production data for a specific date.
+     * 
+     * @param date the date used to fetch the hourly production data
+     * @return a list of HourlyProduction objects representing the production data for each hour of the specified date.
+     */
     public List<HourlyProduction> thisDayDataByHour(LocalDate date) {
         return hourlyProductionRepository.findByTimestampBetween(
                 date.atStartOfDay(), date.plusDays(1).atStartOfDay()
         );
     }
 
-    // Method to fetch daily production data between specific dates
+    /**
+     * Method to fetch the daily production data between specific dates.
+     * 
+     * @param startDate the start date of the range
+     * @param endDate the end date of the range
+     * @return a list of DailyProduction objects representing the production data between the specified dates.
+     */
     public List<DailyProduction> getDailyDataBetween(LocalDate startDate, LocalDate endDate) {
         return dailyProductionRepository.findByDateBetween(startDate, endDate);
     }
 
-    // Define a simple tuple class to hold the date and integer values
+    /**
+     * A simple tuple class to hold the timestamp and data values.
+     */
     public static class Tuple {
         private LocalDateTime timestamp;
         private int data;
 
+        /**
+         * Constructor to initialize the timestamp and data.
+         * 
+         * @param timestamp the timestamp of the production data
+         * @param data the production data value
+         */
         public Tuple(LocalDateTime timestamp, int data) {
             this.timestamp = timestamp;
             this.data = data;

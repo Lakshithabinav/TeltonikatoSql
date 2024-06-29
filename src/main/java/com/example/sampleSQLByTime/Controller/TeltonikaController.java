@@ -13,62 +13,71 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.sampleSQLByTime.DAO.DataModelOut;
+import com.example.sampleSQLByTime.DAO.ProductionDataSummary;
 import com.example.sampleSQLByTime.Entity.DailyProduction;
 import com.example.sampleSQLByTime.Entity.HourlyProduction;
-import com.example.sampleSQLByTime.Service.DataTotalService;
-import com.example.sampleSQLByTime.Service.InputDataEncode;
+import com.example.sampleSQLByTime.Service.InputDataProcessor;
+import com.example.sampleSQLByTime.Service.ProductionDataService;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:5174")
 public class TeltonikaController {
 
-    private final DataModelOut dataModelOut;
+    private final ProductionDataSummary productionDataSummary;
     private final SimpMessagingTemplate messagingTemplate;
-    private final DataTotalService dataTotalService;
-    private final InputDataEncode inputDataEncode;
+    private final ProductionDataService productionDataService;
+    private final InputDataProcessor inputDataProcessor;
 
-    public TeltonikaController(DataModelOut dataByTime, SimpMessagingTemplate messagingTemplate, DataTotalService dataTotalService, InputDataEncode inputDataEncode) {
-        this.dataModelOut = dataByTime;
+    // Constructor injection for dependencies
+    public TeltonikaController(ProductionDataSummary productionDataSummary, SimpMessagingTemplate messagingTemplate, ProductionDataService dataTotalService, InputDataProcessor inputDataProcessor) {
+        this.productionDataSummary = productionDataSummary;
         this.messagingTemplate = messagingTemplate;
-        this.dataTotalService = dataTotalService;
-        this.inputDataEncode = inputDataEncode;
+        this.productionDataService = dataTotalService;
+        this.inputDataProcessor = inputDataProcessor;
     }
 
+    // Simple GET endpoint to check if the service is running
     @GetMapping("/")
     public String data() {
         return "hello world";
     }
 
+    // GET endpoint to fetch data and return the DataModelOut object
     @GetMapping("/data")
-    public ResponseEntity<DataModelOut> getMethodName() {
-        dataModelOut.fetchDataByTime(LocalDateTime.now());
-        return ResponseEntity.ok(dataModelOut);
+    public ResponseEntity<ProductionDataSummary> getMethodName() {
+        // Fetch data based on the current time
+        productionDataSummary.fetchDataByTime(LocalDateTime.now());
+        return ResponseEntity.ok(productionDataSummary);
     }
 
+    // POST endpoint to receive encoded data, process it, and return the DataModelOut object
     @PostMapping("/data")
-    public ResponseEntity<DataModelOut> receiveData(@RequestBody String encodedData) {
+    public ResponseEntity<ProductionDataSummary> receiveData(@RequestBody String encodedData) {
         try {
-            inputDataEncode.inputDataEncode(encodedData);
-            messagingTemplate.convertAndSend("/topic/dataByTime", dataModelOut);
-            return ResponseEntity.ok(dataModelOut);
+            // Decode and process the input data
+            inputDataProcessor.inputDataEncode(encodedData, productionDataSummary);
+            // Send the processed data to the WebSocket topic "/topic/dataByTime"
+            messagingTemplate.convertAndSend("/topic/dataByTime", productionDataSummary);
+            return ResponseEntity.ok(productionDataSummary);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().build();
         }
     }
 
+    // GET endpoint to fetch daily production data between two dates
     @GetMapping("/get-data-btwn-dates")
     public List<DailyProduction> getDailyProductionBetween(@RequestParam("startDate") String startDate,
-                                                           @RequestParam("endDate") String endDate) {
+                                                            @RequestParam("endDate") String endDate) {
         LocalDate start = LocalDate.parse(startDate);
         LocalDate end = LocalDate.parse(endDate);
-        return dataTotalService.getDailyDataBetween(start, end);
+        return productionDataService.getDailyDataBetween(start, end);
     }
 
+    // GET endpoint to fetch hourly production data for a specific date
     @GetMapping("/get-data-of-one-day")
     public List<HourlyProduction> getMethodName(@RequestParam("oneDay") String dateString) {
         LocalDate dataOfDate = LocalDate.parse(dateString);
-        return dataTotalService.thisDayDataByHour(dataOfDate);
+        return productionDataService.thisDayDataByHour(dataOfDate);
     }
 }

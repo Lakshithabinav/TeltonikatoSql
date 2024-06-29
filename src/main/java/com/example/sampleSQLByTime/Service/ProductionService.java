@@ -15,7 +15,7 @@ import com.example.sampleSQLByTime.Repository.MinuteProductionOfSecondValueRepos
 import com.example.sampleSQLByTime.Repository.MinuteProductionOfThirdValueRepository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.YearMonth;
+
 import java.util.List;
 
 @Service

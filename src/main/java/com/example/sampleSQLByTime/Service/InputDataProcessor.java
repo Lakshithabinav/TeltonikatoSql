@@ -9,28 +9,27 @@ import java.util.Date;
 import org.springframework.stereotype.Service;
 
 import com.example.sampleSQLByTime.DAO.DataModel;
-import com.example.sampleSQLByTime.DAO.DataModelOut;
+import com.example.sampleSQLByTime.DAO.ProductionDataSummary;
 import com.example.sampleSQLByTime.Entity.MinuteProductionOfFirstValue;
 import com.example.sampleSQLByTime.Entity.MinuteProductionOfSecondValue;
 import com.example.sampleSQLByTime.Entity.MinuteProductionOfThirdValue;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
-public class InputDataEncode {
+public class InputDataProcessor {
 
     private final ObjectMapper objectMapper;
     private final ProductionService productionService;
-    private final DataModelOut dataModelOut;
+    
 
    
-    public InputDataEncode(ObjectMapper objectMapper, ProductionService productionService) {
+    public InputDataProcessor(ObjectMapper objectMapper, ProductionService productionService) {
         this.objectMapper = objectMapper;
         this.productionService = productionService;
-        this.dataModelOut = null;
        
     }
 
-    public void inputDataEncode(String encodedData) {
+    public void inputDataEncode(String encodedData, ProductionDataSummary productionDataSummary) {
         try {
             System.out.println("Encoded data: " + encodedData);
 
@@ -82,7 +81,7 @@ public class InputDataEncode {
                     productionService.saveMinuteProductionOfThirdValue(minuteProduction);
                 }
             }
-            dataModelOut.fetchDataByTime(dataModels[0].getTimestamp());
+            productionDataSummary.fetchDataByTime(dataModels[0].getTimestamp());
         } catch (Exception e) {
             System.out.println("Error processing data: " + e.getMessage());
         }

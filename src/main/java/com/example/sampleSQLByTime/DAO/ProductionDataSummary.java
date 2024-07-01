@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.example.sampleSQLByTime.Entity.HourlyProduction;
 import com.example.sampleSQLByTime.Service.ProductionDataService;
-import com.example.sampleSQLByTime.Service.ProductionDataService.Tuple;
+
 
 import org.springframework.stereotype.Component;
 
@@ -17,8 +17,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProductionDataSummary {
     private List<Tuple> data;  // List of tuples containing the last recorded minute values
-    private List<Integer> hourData;  // List of hourly production data for the current hour
-    private List<Integer> todayData;  // List of today's total production data
     private List<HourlyProduction> todaysTotalProductionbyHour;  // Hourly production details for the current day
 
     private final ProductionDataService dataTotalService;
@@ -38,9 +36,7 @@ public class ProductionDataSummary {
      * @param date the date and time used to fetch the production data
      */
     public void fetchDataByTime(LocalDateTime date) {
-        this.data = dataTotalService.getLastData();
-        this.hourData = dataTotalService.getThisHourData(date);
-        this.todayData = dataTotalService.getThisDayData(date);
+        this.data = dataTotalService.getLastData(date);
         this.todaysTotalProductionbyHour = dataTotalService.thisDayDataByHour(date.toLocalDate());
     }
 
@@ -51,24 +47,6 @@ public class ProductionDataSummary {
      */
     public List<Tuple> getData() {
         return data;
-    }
-
-    /**
-     * Returns the list of hourly production data for the current hour.
-     * 
-     * @return the hour data list
-     */
-    public List<Integer> getHourData() {
-        return hourData;
-    }
-
-    /**
-     * Returns the list of today's total production data.
-     * 
-     * @return the today's data list
-     */
-    public List<Integer> getTodayData() {
-        return todayData;
     }
 
     /**

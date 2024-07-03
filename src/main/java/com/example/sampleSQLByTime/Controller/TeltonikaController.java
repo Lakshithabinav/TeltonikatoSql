@@ -45,7 +45,6 @@ public class TeltonikaController {
     // GET endpoint to fetch data and return the ProductionDataSummary object
     @GetMapping("/data")
     public ResponseEntity<ProductionDataSummary> getData() {
-        System.out.println("helooooooooooooooooooooooooooooooooooo");
         // Fetch data based on the current time
         productionDataSummary.fetchDataByTime(LocalDateTime.now());
         return ResponseEntity.ok(productionDataSummary);

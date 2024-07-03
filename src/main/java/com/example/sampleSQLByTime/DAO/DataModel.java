@@ -8,7 +8,7 @@ public class DataModel {
     private String name;
     private String time; // Keep the original time string for reference
     private LocalDateTime timestamp; // Store the formatted date as LocalDateTime
-
+    
     // Getters and setters...
 
     public int getData() {

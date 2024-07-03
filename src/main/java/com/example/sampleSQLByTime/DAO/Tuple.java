@@ -3,6 +3,7 @@ package com.example.sampleSQLByTime.DAO;
 import java.time.LocalDateTime;
 
 public class Tuple {
+   private String name="";
     private LocalDateTime timestamp;
     private int data;
     private int hourData;
@@ -16,7 +17,8 @@ public class Tuple {
      * @param hourData the hourly production data value
      * @param dailyData the daily production data value
      */
-    public Tuple(LocalDateTime timestamp, int data, int hourData, int dailyData) {
+    public Tuple( String name,LocalDateTime timestamp, int data, int hourData, int dailyData) {
+        this.name = name;
         this.timestamp = timestamp;
         this.data = data;
         this.hourData = hourData;
@@ -34,7 +36,9 @@ public class Tuple {
     public int getData() {
         return data;
     }
-
+    public String getName(){
+        return name;
+    }
     public void setData(int data) {
         this.data = data;
     }

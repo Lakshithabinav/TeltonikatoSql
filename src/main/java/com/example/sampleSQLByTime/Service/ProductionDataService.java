@@ -45,18 +45,21 @@ public class ProductionDataService {
         GetThisDayData getThisDayData = new GetThisDayData(date);
         return List.of(
             new Tuple(
+                "First Value",
                 lastFirstValue != null ? lastFirstValue.getTimestamp() : null,
                 lastFirstValue != null ? lastFirstValue.getData() : 0,
                 getThisHourData.SpecificDataValue.getFirstData(),
                 getThisDayData.SpecificDataValue.getFirstData()
             ),
             new Tuple(
+                "Second Value",
                 lastSecondValue != null ? lastSecondValue.getTimestamp() : null,
                 lastSecondValue != null ? lastSecondValue.getData() : 0,
                 getThisHourData.SpecificDataValue.getSecondData(),
                 getThisDayData.SpecificDataValue.getSecondData()
             ),
             new Tuple(
+                "Third Value",
                 lastThirdValue != null ? lastThirdValue.getTimestamp() : null,
                 lastThirdValue != null ? lastThirdValue.getData() : 0,
                 getThisHourData.SpecificDataValue.getThirdData(),
